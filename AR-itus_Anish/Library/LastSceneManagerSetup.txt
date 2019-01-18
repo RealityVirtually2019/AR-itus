@@ -1,0 +1,4 @@
+sceneSetups:
+- path: C:/Users/Player/Downloads/ViveSRWorksHand-master/ViveSRWorksHand-master/Assets/DemoScene/HandScene.unity
+  isLoaded: 1
+  isActive: 1
