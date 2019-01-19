@@ -8,6 +8,7 @@ using UnityEngine.Windows.Speech;
 
 public class SoundListener : MonoBehaviour
 {
+    private string menu = "Main"; 
     private KeywordRecognizer keywordRecognizer;
    
     [SerializeField]
