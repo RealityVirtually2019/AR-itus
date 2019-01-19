@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class FingerCounter : MonoBehaviour
 {
-    public Transform thumb, index, middle, ring, pinky, joint_ti, joint_im, joint_mr, joint_rp;
-    private List<Transform> fingers = new List<Transform>();
+    public Transform rthumb, rindex, rmiddle, rring, rpinky, rjoint_ti, rjoint_im, rjoint_mr, rjoint_rp;
+    public Transform lthumb, lindex, lmiddle, lring, lpinky, ljoint_ti, ljoint_im, ljoint_mr, ljoint_rp;
+    public Transform left_hand, right_hand, index;
+    private List<Transform> rfingers = new List<Transform>(),lfingers = new List<Transform>(), fingers = new List<Transform>();
     private List<List<float>> degreesOfIsolation = new List<List<float>>{ new List<float> {0,15f,0,0}, new List<float> { 0,15.5f, 23f,0 }, new List<float> { 0,14.5f,23.5f,32f }, new List<float> { 37f,14.5f,26f,33f } };
-    private List<Transform> accuracyJoints = new List<Transform>();
+    private List<Transform> raccuracyJoints = new List<Transform>(), laccuracyJoints = new List<Transform>(), accuracyJoints = new List<Transform>();
     //Thumb-Index, Index-Middle, Middle-Ring, Ring-Pinky
     private const float accuracyConst = 0;
     private int previousNum = 0;
@@ -15,22 +17,45 @@ public class FingerCounter : MonoBehaviour
     void Start()
     {
         Debug.Log("Starting");
-        fingers.Add(thumb);
-        fingers.Add(index);
-        fingers.Add(middle);
-        fingers.Add(ring);
-        fingers.Add(pinky);
+        rfingers.Add(rthumb);
+        rfingers.Add(rindex);
+        rfingers.Add(rmiddle);
+        rfingers.Add(rring);
+        rfingers.Add(rpinky);
 
-        accuracyJoints.Add(joint_ti);
-        accuracyJoints.Add(joint_im);
-        accuracyJoints.Add(joint_mr);
-        accuracyJoints.Add(joint_rp);
+        lfingers.Add(lthumb);
+        lfingers.Add(lindex);
+        lfingers.Add(lmiddle);
+        lfingers.Add(lring);
+        lfingers.Add(lpinky);
+
+        laccuracyJoints.Add(ljoint_ti);
+        laccuracyJoints.Add(ljoint_im);
+        laccuracyJoints.Add(ljoint_mr);
+        laccuracyJoints.Add(ljoint_rp);
+
+        raccuracyJoints.Add(rjoint_ti);
+        raccuracyJoints.Add(rjoint_im);
+        raccuracyJoints.Add(rjoint_mr);
+        raccuracyJoints.Add(rjoint_rp);
 
     }
 
     // Update is called once per frame
     void Update()
     {
+       if (right_hand.gameObject.activeSelf)
+        {
+            fingers = rfingers;
+            accuracyJoints = raccuracyJoints;
+            index = rindex;
+        }
+        else
+        {
+            fingers = lfingers;
+            accuracyJoints = laccuracyJoints;
+            index = lindex;
+        }
        int numFings = 0;
        foreach (Transform curFing in fingers){
             Transform nextFing = curFing;
@@ -62,9 +87,38 @@ public class FingerCounter : MonoBehaviour
         }
         if (previousNum > 1)
         {
-            Accuracy();
+            Debug.Log(Accuracy());
         }
+        else
+        {
+            Debug.Log(AccuracyFirst());
+        }
+ 
         
+    }
+    float AccuracyFirst()
+    {
+        float DeviationFromStandard = 0, change_x = 0, change_z = 0;
+        Transform startTransform = index.GetChild(0);
+        string DeviationString = "";
+        while (true)
+        {
+            if (startTransform.childCount == 0)
+            {
+                break;
+            }
+            else
+            {
+                change_x += Mathf.Abs(startTransform.position.x - startTransform.GetChild(0).position.x) / startTransform.position.x;
+                change_z += Mathf.Abs(startTransform.position.z - startTransform.GetChild(0).position.z) / startTransform.position.z;
+                DeviationFromStandard += 100 - change_z * 100 - change_x * 100;
+                startTransform = startTransform.GetChild(0);
+            }
+        }
+        float accuracy = (DeviationFromStandard / 3);
+        accuracy = Mathf.Max(0, accuracy);
+        accuracy = Mathf.Min(100, accuracy);
+        return accuracy;
     }
     float Accuracy()
     {
@@ -77,6 +131,8 @@ public class FingerCounter : MonoBehaviour
             float Side_F1toJoint = Vector3.Distance(endPoint_1.position, accuracyJoints[i - 1].position);
             float Side_F2toJoint = Vector3.Distance(endPoint_2.position, accuracyJoints[i - 1].position);
             float theta = Mathf.Rad2Deg*Mathf.Acos((Mathf.Pow(Side_InBetweenEndPoints,2)-Mathf.Pow(Side_F1toJoint,2)-Mathf.Pow(Side_F2toJoint,2))/(-2*Side_F2toJoint*Side_F1toJoint));
+            Debug.Log(theta);
+
             if (degreesOfIsolation[previousNum-2][i-1] != 0)
             {
                 float change = Mathf.Abs(degreesOfIsolation[previousNum - 2][i - 1] - theta)/degreesOfIsolation[previousNum-2][i-1];
@@ -86,11 +142,12 @@ public class FingerCounter : MonoBehaviour
             
             
         }
-        Debug.Log(DeviationFromStandard/(previousNum-1));
-            
-        
-        
-        return 100 - DeviationFromStandard;
+        float accuracy = (DeviationFromStandard/(previousNum-1));
+        accuracy = Mathf.Max(0, accuracy);
+        accuracy = Mathf.Min(100, accuracy);
+
+
+        return accuracy;
     }
     float dist(Vector3 p1, Vector3 p2)
     {
