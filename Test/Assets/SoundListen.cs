@@ -26,14 +26,14 @@ public class SoundListen : MonoBehaviour
 
     private Dictionary<string, List<string>> menuCommands = new Dictionary<string, List<string>> {
         { "Main Menu",  new List<string> { "start", "goal" } },
-        { "Excersice Selection",  new List<string> { "finger", "balance", "drop" } },
+        { "Excersice Selection",  new List<string> { "gesture", "balance", "drop" } },
         { "Goal Menu",  new List<string> {} }
     };
 
     private Dictionary<string, string> commandActions = new Dictionary<string, string> {
         { "start", "Excersice Selection" },
         {"goal", "Goal Menu"},
-        { "finger", "Excersize: Fingers"},
+        { "gesture", "Excersize: Fingers"},
         { "balance", "Excersize: Balance"},
         { "drop", "Excersize: Drop"}
     };
@@ -69,8 +69,13 @@ public class SoundListen : MonoBehaviour
                     if (text.Contains(str))
                     {
                         Debug.Log(str);
-                        
+                        if (menu.Equals("start")) // run excersize
+                        {
+
+                        }
+                        uiParent.Find(menu).gameObject.SetActive(false);
                         menu = commandActions[str];
+                        uiParent.Find(menu).gameObject.SetActive(true);
                         break;
                     }
                 }
