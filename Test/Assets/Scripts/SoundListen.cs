@@ -12,7 +12,7 @@ using UnityEngine;
 public class SoundListen : MonoBehaviour
 {
     public Transform uiParent;
-    public GameObject scriptHolder;
+    public Transform exerciseParent;
 
     private KeywordRecognizer keywordRecognizer;
 
@@ -26,30 +26,28 @@ public class SoundListen : MonoBehaviour
 
     private string menu = "Main Menu";
     private string oldMenu;
+    private bool inExercise = false;
 
     private Dictionary<string, List<string>> menuCommands = new Dictionary<string, List<string>> {
         { "Main Menu",  new List<string> { "start", "goal" } },
-        { "Excersice Selection",  new List<string> { "gesture", "balance", "drop" } },
+        { "Exercise Selection",  new List<string> { "gesture", "balance", "drop" } },
         { "Goal Menu",  new List<string> {} },
-        { "Excersize: Fingers", new List<string> { "return" } }
+        { "Exercise: Fingers", new List<string> { "return" } }
     };
 
     private Dictionary<string, string> commandActions = new Dictionary<string, string> {
-        { "start", "Excersice Selection" },
+        { "start", "Exercise Selection" },
         {"goal", "Goal Menu"},
-        { "gesture", "Excersize: Fingers"},
-        { "balance", "Excersize: Balance"},
-        { "drop", "Excersize: Drop"}
+        { "gesture", "Exercise: Fingers"},
+        { "balance", "Exercise: Balance"},
+        { "drop", "Exercise: Drop"}
     };
-
-    public Dictionary<string, Component> scriptDirector = new Dictionary<string, Component> {
-        { "gesture", new Gesture() }, { "drop", new Drop() }, {"balance", new Balance() }
-    };
+    
 
     void Start()
     {
         recognition = new DictationRecognizer();
-        List<string> commands = new List<string> { "start", "goal" };
+        GameObject exerciseScript;
 
         recognition.DictationResult += (text, confidence) =>
         {
@@ -80,7 +78,14 @@ public class SoundListen : MonoBehaviour
 
                         if (str.Equals("return"))
                         {
+                            if (inExercise) // remove exercise code
+                            {
+                                Debug.Log("Remove stuff");
+                                inExercise = false;
+                            }
+
                             menu = commandActions[oldMenu];
+                            oldMenu = "Main Menu";
                         }
                         else
                         {
@@ -88,12 +93,16 @@ public class SoundListen : MonoBehaviour
                             menu = commandActions[str];
                         }
 
-                        
-                        uiParent.Find(menu).gameObject.SetActive(true);
+                        Transform newMen = uiParent.Find(menu);
+                        newMen.gameObject.SetActive(true);
 
-                        if (oldMenu.Equals("start")) // run excersize
+                        if (oldMenu.Equals("Exercise Selection")) // run exercise
                         {
-                            uiParent.gameObject.AddComponent(scriptDirector[str].GetType());
+                            
+                            inExercise = true;
+                            GameObject newScript = Instantiate(exerciseParent.Find(str).gameObject, newMen);
+                            newScript.SetActive(true);
+                            exerciseScript = newScript;
                         } 
                         
                         break;
