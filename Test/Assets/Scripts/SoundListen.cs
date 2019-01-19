@@ -12,6 +12,8 @@ using UnityEngine;
 public class SoundListen : MonoBehaviour
 {
     public Transform uiParent;
+    public GameObject scriptHolder;
+
     private KeywordRecognizer keywordRecognizer;
 
     [SerializeField]
@@ -23,11 +25,13 @@ public class SoundListen : MonoBehaviour
     private DictationRecognizer recognition;
 
     private string menu = "Main Menu";
+    private string oldMenu;
 
     private Dictionary<string, List<string>> menuCommands = new Dictionary<string, List<string>> {
         { "Main Menu",  new List<string> { "start", "goal" } },
         { "Excersice Selection",  new List<string> { "gesture", "balance", "drop" } },
-        { "Goal Menu",  new List<string> {} }
+        { "Goal Menu",  new List<string> {} },
+        { "Excersize: Fingers", new List<string> { "return" } }
     };
 
     private Dictionary<string, string> commandActions = new Dictionary<string, string> {
@@ -38,6 +42,9 @@ public class SoundListen : MonoBehaviour
         { "drop", "Excersize: Drop"}
     };
 
+    public Dictionary<string, Component> scriptDirector = new Dictionary<string, Component> {
+        { "gesture", new Gesture() }, { "drop", new Drop() }, {"balance", new Balance() }
+    };
 
     void Start()
     {
@@ -69,13 +76,26 @@ public class SoundListen : MonoBehaviour
                     if (text.Contains(str))
                     {
                         Debug.Log(str);
-                        if (menu.Equals("start")) // run excersize
-                        {
-
-                        }
                         uiParent.Find(menu).gameObject.SetActive(false);
-                        menu = commandActions[str];
+
+                        if (str.Equals("return"))
+                        {
+                            menu = commandActions[oldMenu];
+                        }
+                        else
+                        {
+                            oldMenu = menu;
+                            menu = commandActions[str];
+                        }
+
+                        
                         uiParent.Find(menu).gameObject.SetActive(true);
+
+                        if (oldMenu.Equals("start")) // run excersize
+                        {
+                            uiParent.gameObject.AddComponent(scriptDirector[str].GetType());
+                        } 
+                        
                         break;
                     }
                 }
