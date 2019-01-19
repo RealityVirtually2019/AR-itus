@@ -10,7 +10,7 @@ AR-itus_Anish/Assets/ViveSR/
 AR-itus_Anish/Assets/ViveSR_Experience/
 Test/Assets/SteamVR/
 Test/Assets/SteamVR_Input/
-Test/Assets/ViveSR/
+Test/Assets/ViveSR/Plugins/*.dll
 Test/Assets/ViveSR_Experience/
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
