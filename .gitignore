@@ -4,14 +4,7 @@
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
-AR-itus_Anish/Assets/SteamVR/
-AR-itus_Anish/Assets/SteamVR_Input/
-AR-itus_Anish/Assets/ViveSR/
-AR-itus_Anish/Assets/ViveSR_Experience/
-Test/Assets/SteamVR/
-Test/Assets/SteamVR_Input/
-Test/Assets/ViveSR/Plugins/*.dll
-Test/Assets/ViveSR_Experience/
+
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # [Aa]ssets/AssetStoreTools*
@@ -143,6 +136,15 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+
+AR-itus_Anish/Assets/SteamVR/
+AR-itus_Anish/Assets/SteamVR_Input/
+AR-itus_Anish/Assets/ViveSR/
+AR-itus_Anish/Assets/ViveSR_Experience/
+Test/Assets/SteamVR/
+Test/Assets/SteamVR_Input/
+Test/Assets/ViveSR/Plugins/*.dll
+Test/Assets/ViveSR_Experience/
 
 # Chutzpah Test files
 _Chutzpah*
