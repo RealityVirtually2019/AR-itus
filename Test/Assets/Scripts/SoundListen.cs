@@ -46,6 +46,8 @@ public class SoundListen : MonoBehaviour
 
     void Start()
     {
+        // testing hit
+
         recognition = new DictationRecognizer();
         GameObject exerciseScript;
 
@@ -131,6 +133,11 @@ public class SoundListen : MonoBehaviour
         recognition.Start();
     }
 
+
+    public void select(GameObject button, Collider hit) // called by other objects
+    {
+        Debug.Log(hit.name);
+    }
 
     // Update is called once per frame
     void Update()
