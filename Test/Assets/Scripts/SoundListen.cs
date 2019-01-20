@@ -31,9 +31,7 @@ public class SoundListen : MonoBehaviour
 
     private Dictionary<string, List<string>> menuCommands = new Dictionary<string, List<string>> {
         { "Main Menu",  new List<string> { "start", "goal" } },
-        { "Exercise Selection",  new List<string> { "finger", "balance", "drop" } },
-        { "Goal Menu",  new List<string> {} },
-        { "Exercise: Fingers", new List<string> { "return" } }
+        { "Exercise Selection",  new List<string> { "finger", "balance", "stretch" } }
     };
 
     private Dictionary<string, string> commandActions = new Dictionary<string, string> {
@@ -41,7 +39,7 @@ public class SoundListen : MonoBehaviour
         {"goal", "Goal Menu"},
         { "finger", "Exercise: Fingers"},
         { "balance", "Exercise: Balance"},
-        { "drop", "Exercise: Drop"}
+        { "stretch", "Exercise: Drop"}
     };
     
 
@@ -73,46 +71,88 @@ public class SoundListen : MonoBehaviour
             //Debug.LogFormat("Dictation hypothesis: {0}", text);
             try
             {
-                foreach (string str in menuCommands[menu])
+                if (text.Contains("return"))
                 {
-                    if (text.Contains(str))
+                    if (inExercise) // remove exercise code
                     {
-                        Debug.Log(str);
-                        uiParent.Find(menu).gameObject.SetActive(false);
-
-                        if (str.Equals("return"))
+                        Debug.Log("Remove stuff");
+                        try
                         {
-                            if (inExercise) // remove exercise code
+                            Destroy(uiParent.transform.Find(menu).Find("balance(Clone)").gameObject);
+                        }
+                        catch
+                        {}
+                        try
+                        {
+                            Destroy(uiParent.transform.Find(menu).Find("stretch(Clone)").gameObject);
+                        }
+                        catch
+                        {}
+                        try
+                        {
+                            Destroy(uiParent.transform.Find(menu).Find("finger(Clone)").gameObject);
+                        }
+                        catch
+                        { }
+                        inExercise = false;
+                    }
+
+                    uiParent.Find(menu).gameObject.SetActive(false);
+
+
+                    menu = oldMenu;
+                    oldMenu = "Main Menu";
+
+                    Transform newMen = uiParent.Find(menu);
+                    newMen.gameObject.SetActive(true);
+
+                    
+                }
+
+                try
+                {
+                    foreach (string str in menuCommands[menu])
+                    {
+                        try
+                        {
+                            if (text.Contains(str))
                             {
-                                Debug.Log("Remove stuff");
-                                inExercise = false;
+                                Debug.Log(str);
+                                uiParent.Find(menu).gameObject.SetActive(false);
+
+
+                                oldMenu = menu;
+                                menu = commandActions[str];
+
+                                Transform newMen = uiParent.Find(menu);
+                                newMen.gameObject.SetActive(true);
+
+                                if (oldMenu.Equals("Exercise Selection")) // run exercise
+                                {
+
+                                    inExercise = true;
+                                    GameObject newScript = Instantiate(exerciseParent.Find(str).gameObject, newMen);
+                                    newScript.SetActive(true);
+
+                                    exerciseScript = newScript;
+                                }
+
+                                break;
                             }
-
-                            menu = commandActions[oldMenu];
-                            oldMenu = "Main Menu";
                         }
-                        else
+                        catch
                         {
-                            oldMenu = menu;
-                            menu = commandActions[str];
+
                         }
 
-                        Transform newMen = uiParent.Find(menu);
-                        newMen.gameObject.SetActive(true);
-
-                        if (oldMenu.Equals("Exercise Selection")) // run exercise
-                        {
-                            
-                            inExercise = true;
-                            GameObject newScript = Instantiate(exerciseParent.Find(str).gameObject, newMen);
-                            newScript.SetActive(true);
-
-                            exerciseScript = newScript;
-                        } 
-                        
-                        break;
                     }
                 }
+                catch
+                {
+
+                }
+
+            
 
             }
             catch (Exception e)
