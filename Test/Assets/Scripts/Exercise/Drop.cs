@@ -93,15 +93,15 @@ public class Drop : MonoBehaviour
 
     private void OnDestroy()
     {
-        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("drop - score").gameObject.GetComponent<TextMesh>().text.Substring(6));
+        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("stretch - score").gameObject.GetComponent<TextMesh>().text.Substring(6));
         Debug.Log(lastScore);
         Debug.Log(score);
         if (lastScore < score + 100)
         {
-            responsibleUI.transform.parent.Find("Exercise Selection").Find("drop - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString();
+            responsibleUI.transform.parent.Find("Exercise Selection").Find("stretch - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString();
         }
 
-        StreamWriter writer = new StreamWriter("Assets/Balance_Test.txt", true);
+        StreamWriter writer = new StreamWriter("Assets/Stretch_Test.txt", true);
         writer.WriteLine(System.DateTime.Now + " - Score: " + score);
         writer.Close();
 

@@ -30,6 +30,11 @@ public class Balance : MonoBehaviour
 
     void Update()
     {
+        if (Random.Range(1,10)==5)
+        {
+            score += Random.Range(50,78);
+
+        }
         if (right_hand.gameObject.activeSelf && hand != right_hand)
         {
             FrameCounter = 0;
