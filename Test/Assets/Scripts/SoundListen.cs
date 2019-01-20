@@ -13,6 +13,7 @@ public class SoundListen : MonoBehaviour
 {
     public Transform uiParent;
     public Transform exerciseParent;
+    //public Camera mainCam;
 
     private KeywordRecognizer keywordRecognizer;
 
@@ -30,7 +31,7 @@ public class SoundListen : MonoBehaviour
 
     private Dictionary<string, List<string>> menuCommands = new Dictionary<string, List<string>> {
         { "Main Menu",  new List<string> { "start", "goal" } },
-        { "Exercise Selection",  new List<string> { "gesture", "balance", "drop" } },
+        { "Exercise Selection",  new List<string> { "finger", "balance", "drop" } },
         { "Goal Menu",  new List<string> {} },
         { "Exercise: Fingers", new List<string> { "return" } }
     };
@@ -38,7 +39,7 @@ public class SoundListen : MonoBehaviour
     private Dictionary<string, string> commandActions = new Dictionary<string, string> {
         { "start", "Exercise Selection" },
         {"goal", "Goal Menu"},
-        { "gesture", "Exercise: Fingers"},
+        { "finger", "Exercise: Fingers"},
         { "balance", "Exercise: Balance"},
         { "drop", "Exercise: Drop"}
     };
