@@ -47,6 +47,7 @@ public class SoundListen : MonoBehaviour
     void Start()
     {
         // testing hit
+        Debug.Log("Starting Voice Recognition");
 
         recognition = new DictationRecognizer();
         GameObject exerciseScript;
@@ -68,7 +69,7 @@ public class SoundListen : MonoBehaviour
         };
         recognition.DictationHypothesis += (text) =>
         {
-            //Debug.LogFormat("Dictation hypothesis: {0}", text);
+            Debug.LogFormat("Dictation hypothesis: {0}", text);
             try
             {
                 foreach (string str in menuCommands[menu])
@@ -104,6 +105,7 @@ public class SoundListen : MonoBehaviour
                             inExercise = true;
                             GameObject newScript = Instantiate(exerciseParent.Find(str).gameObject, newMen);
                             newScript.SetActive(true);
+
                             exerciseScript = newScript;
                         } 
                         
