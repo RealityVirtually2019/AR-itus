@@ -71,7 +71,7 @@ namespace Vive.Plugin.SR
         public static bool ColliderMeshVisibility 
         {
             get { return _MeshColliderVisible; }
-            set { if (value != _MeshColliderVisible) SetLiveMeshVisibility(value); }
+            set { SetLiveMeshVisibility(false); }
         }
         public static Material ColliderDefaultMaterial
         {
@@ -110,7 +110,7 @@ namespace Vive.Plugin.SR
                         MeshClds = ColliderObjs.AddComponent<MeshCollider>();
                     }
                     ColliderObjs.SetActive(true);
-                    ColliderMeshVisibility = true;
+                    ColliderMeshVisibility = false;
 
                     SetQualityScale(QualityScale);
                     if (MeshDataThread == null)

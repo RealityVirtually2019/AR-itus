@@ -69,7 +69,7 @@ public class SoundListen : MonoBehaviour
         };
         recognition.DictationHypothesis += (text) =>
         {
-            Debug.LogFormat("Dictation hypothesis: {0}", text);
+            //Debug.LogFormat("Dictation hypothesis: {0}", text);
             try
             {
                 foreach (string str in menuCommands[menu])
