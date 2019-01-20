@@ -131,7 +131,7 @@ public class Gesture : MonoBehaviour
             totAccuracy = 0;
             
 
-            if (accuracy > 80 && wantedNumber == numFings)
+            if (accuracy > 40 && wantedNumber == numFings)
             {
                 correctTimes++;
                 if (correctTimes >= 2)
