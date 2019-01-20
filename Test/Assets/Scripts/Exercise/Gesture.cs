@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Gesture : MonoBehaviour
 {
     public Transform rthumb, rindex, rmiddle, rring, rpinky, rjoint_ti, rjoint_im, rjoint_mr, rjoint_rp;
@@ -14,9 +15,18 @@ public class Gesture : MonoBehaviour
     private const float accuracyConst = 0;
     private int previousNum = 0;
 
+
+    private int wantedNumber;
+    private void next()
+    {
+        wantedNumber = Random.Range(1, 6);
+        Debug.Log("Lift up "+ wantedNumber+" fingers");
+    }
+
     void Start()
     {
         Debug.Log("Starting");
+        next();
         rfingers.Add(rthumb);
         rfingers.Add(rindex);
         rfingers.Add(rmiddle);
@@ -81,20 +91,19 @@ public class Gesture : MonoBehaviour
                 }
             }
         }
-        if (numFings != previousNum)
-        {
-            //Debug.Log(numFings);
-            previousNum = numFings;
-        }
+        previousNum = numFings;
+
+        float accuracy;
         if (previousNum > 1)
         {
-            Debug.Log(Accuracy());
+            accuracy = Accuracy();
         }
         else
         {
-            Debug.Log(AccuracyFirst());
+            accuracy = AccuracyFirst();
         }
 
+        if (accuracy > 80 && wantedNumber == numFings)
 
     }
 
