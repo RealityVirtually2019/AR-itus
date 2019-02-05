@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class Balance : MonoBehaviour
@@ -29,6 +30,11 @@ public class Balance : MonoBehaviour
 
     void Update()
     {
+        if (Random.Range(1,10)==5)
+        {
+            score += Random.Range(50,78);
+
+        }
         if (right_hand.gameObject.activeSelf && hand != right_hand)
         {
             FrameCounter = 0;
@@ -133,5 +139,21 @@ public class Balance : MonoBehaviour
                 parts.Enqueue(child);
             }
         }
+    }
+
+    private void OnDestroy()
+    {
+        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("balance - score").gameObject.GetComponent<TextMesh>().text.Substring(6));
+        Debug.Log(lastScore);
+        Debug.Log(score);
+        if (lastScore < score + 100)
+        {
+            responsibleUI.transform.parent.Find("Exercise Selection").Find("balance - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString();
+        }
+
+        StreamWriter writer = new StreamWriter("Assets/Balance_Test.txt", true);
+        writer.WriteLine(System.DateTime.Now + " - Score: " + score);
+        writer.Close();
+
     }
 }

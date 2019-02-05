@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.IO;
 
 public class Gesture : MonoBehaviour
 {
@@ -221,4 +221,19 @@ public class Gesture : MonoBehaviour
         return startFinger;
     }
 
+    private void OnDestroy()
+    {
+        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("finger - score").gameObject.GetComponent<TextMesh>().text.Substring(6));
+        Debug.Log(lastScore);
+        Debug.Log(score);
+        if (lastScore  < score + 100)
+        {
+            responsibleUI.transform.parent.Find("Exercise Selection").Find("finger - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString();
+        }
+        
+        StreamWriter writer = new StreamWriter("Assets/Finger_Test.txt", true);
+        writer.WriteLine(System.DateTime.Now + " - Score: "+ score);
+        writer.Close();
+        
+    }
 }

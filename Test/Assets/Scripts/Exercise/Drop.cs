@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class Drop : MonoBehaviour
@@ -87,6 +88,22 @@ public class Drop : MonoBehaviour
             sumVecs += Vector3.Distance(fing.position, palm.position);
         }
         return sumVecs;
+
+    }
+
+    private void OnDestroy()
+    {
+        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("stretch - score").gameObject.GetComponent<TextMesh>().text.Substring(6));
+        Debug.Log(lastScore);
+        Debug.Log(score);
+        if (lastScore < score + 100)
+        {
+            responsibleUI.transform.parent.Find("Exercise Selection").Find("stretch - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString();
+        }
+
+        StreamWriter writer = new StreamWriter("Assets/Stretch_Test.txt", true);
+        writer.WriteLine(System.DateTime.Now + " - Score: " + score);
+        writer.Close();
 
     }
 
