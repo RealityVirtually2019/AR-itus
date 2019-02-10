@@ -7,16 +7,14 @@ public class Gesture : MonoBehaviour
 {
     public GameObject responsibleUI;
 
-    public Transform rthumb, rindex, rmiddle, rring, rpinky, rjoint_ti, rjoint_im, rjoint_mr, rjoint_rp;
-    public Transform lthumb, lindex, lmiddle, lring, lpinky, ljoint_ti, ljoint_im, ljoint_mr, ljoint_rp;
-    public Transform left_hand, right_hand, index;
+    private Transform left_hand_joints, right_hand_joints;
+    private Transform left_hand, right_hand, hand;
+
     private List<Transform> rfingers = new List<Transform>(), lfingers = new List<Transform>(), fingers = new List<Transform>();
     private List<List<float>> degreesOfIsolation = new List<List<float>> { new List<float> { 0, 15f, 0, 0 }, new List<float> { 0, 15.5f, 23f, 0 }, new List<float> { 0, 14.5f, 23.5f, 32f }, new List<float> { 37f, 14.5f, 26f, 33f } };
     private List<Transform> raccuracyJoints = new List<Transform>(), laccuracyJoints = new List<Transform>(), accuracyJoints = new List<Transform>();
-    //Thumb-Index, Index-Middle, Middle-Ring, Ring-Pinky
     private const float accuracyConst = 0;
     private int previousNum = 0;
-
 
     private int wantedNumber = 1;
     private float startTime;
@@ -30,31 +28,40 @@ public class Gesture : MonoBehaviour
         Debug.Log("Lift up "+ wantedNumber+" fingers");
     }
 
-    void Start()
+    private void Start()
     {
-        Debug.Log("Starting");
+        //Initialization of Variables -------------------------------
+        responsibleUI = GameObject.Find("Canvas");//gets the UI interface
+        //Left Hand & Palm
+        left_hand = GameObject.Find("Left Hand").transform;
+        left_hand_joints = GameObject.Find("Left Hand Joints").transform;
+        //Right Hand & Palm
+        right_hand = GameObject.Find("Right Hand").transform;
+        right_hand_joints = GameObject.Find("Right Hand Joints").transform;
+
+        hand = right_hand;
+
         next();
-        rfingers.Add(rthumb);
-        rfingers.Add(rindex);
-        rfingers.Add(rmiddle);
-        rfingers.Add(rring);
-        rfingers.Add(rpinky);
 
-        lfingers.Add(lthumb);
-        lfingers.Add(lindex);
-        lfingers.Add(lmiddle);
-        lfingers.Add(lring);
-        lfingers.Add(lpinky);
+        foreach (Transform right_finger in right_hand)//For each finger in the right hand we add that to the right fingers
+        {
+            rfingers.Add(right_finger);
+        }
+        foreach (Transform l_finger in left_hand)//For each finger in the left hand we add that to the left fingers
+        {
+            lfingers.Add(l_finger);
+        }
+        fingers = rfingers;//set fingers to rhand at start
 
-        laccuracyJoints.Add(ljoint_ti);
-        laccuracyJoints.Add(ljoint_im);
-        laccuracyJoints.Add(ljoint_mr);
-        laccuracyJoints.Add(ljoint_rp);
-
-        raccuracyJoints.Add(rjoint_ti);
-        raccuracyJoints.Add(rjoint_im);
-        raccuracyJoints.Add(rjoint_mr);
-        raccuracyJoints.Add(rjoint_rp);
+        foreach (Transform left_joint in left_hand_joints)
+        {
+            laccuracyJoints.Add(left_joint);
+        }
+        foreach (Transform right_joint in right_hand_joints)
+        {
+            laccuracyJoints.Add(right_joint);
+        }
+        accuracyJoints = raccuracyJoints;
 
     }
 
@@ -65,19 +72,19 @@ public class Gesture : MonoBehaviour
     float totAccuracy = 0;
     int score = 0;
 
-    void Update()
+    private void Update()
     {
         if (right_hand.gameObject.activeSelf)
         {
             fingers = rfingers;
             accuracyJoints = raccuracyJoints;
-            index = rindex;
+            hand = right_hand;
         }
         else
         {
+            hand = left_hand;
             fingers = lfingers;
             accuracyJoints = laccuracyJoints;
-            index = lindex;
         }
 
         int numFings = 0;
@@ -158,10 +165,10 @@ public class Gesture : MonoBehaviour
         
     }
 
-    float AccuracyFirst()
+    private float AccuracyFirst()
     {
         float DeviationFromStandard = 0, change_x = 0, change_z = 0;
-        Transform startTransform = index.GetChild(0);
+        Transform startTransform = hand.Find("index");
 
         while (true)
         {
@@ -182,7 +189,7 @@ public class Gesture : MonoBehaviour
         accuracy = Mathf.Min(100, accuracy);
         return accuracy + 15;
     }
-    float Accuracy()
+    private float Accuracy()
     {
         float DeviationFromStandard = 0;
         for (int i = 1; i < fingers.Count; i++)
@@ -208,11 +215,11 @@ public class Gesture : MonoBehaviour
 
         return accuracy;
     }
-    float dist(Vector3 p1, Vector3 p2)
+    private float dist(Vector3 p1, Vector3 p2)
     {
         return Vector3.Distance(p1, p2);
     }
-    Transform FindEndPoint(Transform startFinger)
+    private Transform FindEndPoint(Transform startFinger)
     {
         while (startFinger.childCount != 0)
         {
