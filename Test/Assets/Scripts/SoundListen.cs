@@ -1,4 +1,10 @@
-﻿//Importing Libraries
+﻿//Anish Aggarwal, Noor Nasri, Zhehai Zhang
+//December 11th 2019
+//ICS4U-01
+//Mr. McKenzie
+//A script that loads other scripts based on voice commands.
+
+//Importing Libraries
 using System;
 using System.Collections;
 using System.Collections.Generic;

@@ -2,7 +2,7 @@
 //December 11th 2019
 //ICS4U-01
 //Mr. McKenzie
-//A stretch program that gives the user points based on stretching their fingers and how frequently they stretch their fingers.
+//A stretch script that gives the user points based on stretching their fingers and how frequently they stretch their fingers.
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;

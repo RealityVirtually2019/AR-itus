@@ -2,7 +2,7 @@
 //December 11th 2019
 //ICS4U-01
 //Mr. McKenzie
-//A gesture program that randomizes number gestures by the hand. It gives points based on the accuracy of the gesture 
+//A gesture script that randomizes number gestures by the hand. It gives points based on the accuracy of the gesture 
 //and won't move on to the next gesture until the gesture is at least over 50% accuracy.
 using System.Collections;
 using System.Collections.Generic;
