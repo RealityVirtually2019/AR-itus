@@ -20,7 +20,7 @@ public class Balance : MonoBehaviour
 
     int FrameCounter = 0, FrameLength = 240;
     float startTime;//time code started
-    float score;
+    float score = 0;
     // Use this for initialization
     void Start()
     {
@@ -74,7 +74,7 @@ public class Balance : MonoBehaviour
             if (FrameCounter % FrameLength == 0){//if its time to reset 
 
                 Total_Deviation = Total_Deviation / FrameLength;//set total deviation to be averages of all total deviations
-                score = Total_Deviation;//set score
+                score += Total_Deviation;//add to score
                 //Display Time and Score
                 responsibleUI.transform.Find("Timer").GetComponent<TextMesh>().text = "Time: " + ((int)(Time.realtimeSinceStartup - startTime)).ToString();
                 responsibleUI.transform.Find("Score").GetComponent<TextMesh>().text = "Score: " + score.ToString();
