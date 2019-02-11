@@ -5,13 +5,13 @@ using System.IO;
 
 public class Gesture : MonoBehaviour
 {
-    public GameObject responsibleUI;
+    private GameObject responsibleUI;
 
     private Transform left_hand_joints, right_hand_joints;
     private Transform left_hand, right_hand, hand;
 
     private List<Transform> rfingers = new List<Transform>(), lfingers = new List<Transform>(), fingers = new List<Transform>();
-    private List<List<float>> degreesOfIsolation = new List<List<float>> { new List<float> { 0, 15f, 0, 0 }, new List<float> { 0, 15.5f, 23f, 0 }, new List<float> { 0, 14.5f, 23.5f, 32f }, new List<float> { 37f, 14.5f, 26f, 33f } };
+    private List<List<float>> referenceValues = new List<List<float>> { new List<float> { 0, 15f, 0, 0 }, new List<float> { 0, 15.5f, 23f, 0 }, new List<float> { 0, 14.5f, 23.5f, 32f }, new List<float> { 37f, 14.5f, 26f, 33f } };
     private List<Transform> raccuracyJoints = new List<Transform>(), laccuracyJoints = new List<Transform>(), accuracyJoints = new List<Transform>();
     private const float accuracyConst = 0;
     private int previousNum = 0;
@@ -201,9 +201,9 @@ public class Gesture : MonoBehaviour
             float Side_F2toJoint = Vector3.Distance(endPoint_2.position, accuracyJoints[i - 1].position);
             float theta = Mathf.Rad2Deg * Mathf.Acos((Mathf.Pow(Side_InBetweenEndPoints, 2) - Mathf.Pow(Side_F1toJoint, 2) - Mathf.Pow(Side_F2toJoint, 2)) / (-2 * Side_F2toJoint * Side_F1toJoint));
             
-            if (degreesOfIsolation[previousNum - 2][i - 1] != 0)
+            if (referenceValues[previousNum - 2][i - 1] != 0)
             {
-                float change = Mathf.Abs(degreesOfIsolation[previousNum - 2][i - 1] - theta) / degreesOfIsolation[previousNum - 2][i - 1];
+                float change = Mathf.Abs(referenceValues[previousNum - 2][i - 1] - theta) / referenceValues[previousNum - 2][i - 1];
                 DeviationFromStandard += 100 - change * 100;
             }
 
