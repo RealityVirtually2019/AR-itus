@@ -5,25 +5,26 @@ using System.IO;
 
 public class Gesture : MonoBehaviour
 {
-    private GameObject responsibleUI;//Changes UI based on movement of fingers, time, etc.
+    private GameObject responsibleUI; //Changes UI based on movement of fingers, time, etc.
 
     private Transform left_hand_joints, right_hand_joints;//This controls the joints in each finger of the right and left hands respectively
     private Transform left_hand, right_hand, hand;//These are the parent object for left and right hand while the hand variable will be set to the active hand.
 
     private List<Transform> rfingers = new List<Transform>(), lfingers = new List<Transform>(), fingers = new List<Transform>();//rfingers holds the right fingers. while lfingers holds the left fingers. fingers is set to the active one.
-    private List<List<float>> referenceValues = new List<List<float>> { new List<float> { 0, 15f, 0, 0 }, new List<float> { 0, 15.5f, 23f, 0 }, new List<float> { 0, 14.5f, 23.5f, 32f }, new List<float> { 37f, 14.5f, 26f, 33f } };//values that should happen for the joints depending on how many fingers are up.
+    private List<List<float>> referenceValues = new List<List<float>> { new List<float> { 0, 15f, 0, 0 }, new List<float> { 0, 15.5f, 23f, 0 }, new List<float> { 0, 14.5f, 23.5f, 32f }, new List<float> { 37f, 14.5f, 26f, 33f } }; //values that should happen for the joints depending on how many fingers are up.
     private List<Transform> raccuracyJoints = new List<Transform>(), laccuracyJoints = new List<Transform>(), accuracyJoints = new List<Transform>();//accuracy joints to test how accurate or proper the finger position is in. Same format as fingers
 
-    private int wantedNumber = 1;//The number of fingers that the program asks use to put up
-    private float startTime;//Start Time for Start Calculation
+    private int wantedNumber = 1; //The number of fingers that the program asks use to put up
+    private float startTime; //Start Time for Start Calculation
 
     private void next()
     {
-        responsibleUI.transform.Find("FingerDisplay").Find(wantedNumber.ToString()).gameObject.SetActive(false);
-        wantedNumber = Random.Range(1, 6);
-        responsibleUI.transform.Find("FingerDisplay").Find(wantedNumber.ToString()).gameObject.SetActive(true);
-        startTime = Time.realtimeSinceStartup;
-        Debug.Log("Lift up "+ wantedNumber+" fingers");
+        // switch to the next hand model 
+        responsibleUI.transform.Find("FingerDisplay").Find(wantedNumber.ToString()).gameObject.SetActive(false);  // turn off current one
+        wantedNumber = Random.Range(1, 6); // choose new model
+        responsibleUI.transform.Find("FingerDisplay").Find(wantedNumber.ToString()).gameObject.SetActive(true // set new model as visible
+        startTime = Time.realtimeSinceStartup; // adjust time variable 
+        Debug.Log("Lift up " + wantedNumber + " fingers"); // tell us how many fingers we need 
     }
 
     private void Start()
@@ -117,47 +118,49 @@ public class Gesture : MonoBehaviour
         {
             accuracy = Accuracy(numFings);//given number of fingers up finds accuracy
         }
-        else if(numFings == 1)
+        else if (numFings == 1)
         {
             accuracy = AccuracyFirst();//If the number of fingers =  1 then we just find accuracy of 1 finger based off of horizontal and not other fingers.
         }
 
         int accuracyStabilizerConst = Mathf.Abs(wantedNumber + 1 - numFings);//if wanted number == numFings up then we want this to be one, otherwise our accuracy will be decreased base on how off it is
         accuracy = accuracy / accuracyStabilizerConst; //divide accuracy by stabilizer constant
-        totAccuracy += accuracy;//Add the current accuracy to the total accuracy
+        totAccuracy += accuracy; //Add the current accuracy to the total accuracy
 
-        if (i == 20)
+        if (i == 20) // every 20 times, take the average accuracy 
         {
-            i = 0;
-            accuracy = totAccuracy / 20;
-            totAccuracy = 0;
-            
+            i = 0; // reset the counter
+            accuracy = totAccuracy / 20; // get average acuracy 
+            totAccuracy = 0; // reset total accuracy 
 
-            if (accuracy > 40 && wantedNumber == numFings)
+
+            if (accuracy > 40 && wantedNumber == numFings) // they are close enough to pass
             {
-                correctTimes++;
-                if (correctTimes >= 2)
+                correctTimes++; // add 1 to the correct # of attempts 
+                if (correctTimes >= 2) // if they got it twice, they can move on. This makes it consistent so outlier calculations don't kill it
                 {
                     Debug.Log("Good job,  you took " + (Time.realtimeSinceStartup - startTime) + " seconds");
-                    score += (int)(accuracy / (Time.realtimeSinceStartup - startTime));
-                    next();
+                    score += (int)(accuracy / (Time.realtimeSinceStartup - startTime)); // add to their score
+                    next(); // switch to the next hand model
                 }
             }
 
-            curIter++;
-            if (curIter >= 3)
+            curIter++; // add to the counter
+            if (curIter >= 3) // if they hit three times and still didn't move to next, then reset. They need 2/3 right.
             {
+                // reset variables
                 curIter = 0;
                 correctTimes = 0;
             }
 
-            responsibleUI.transform.Find("Timer").GetComponent<TextMesh>().text = "Time: " + ((int)(Time.realtimeSinceStartup - startTime)).ToString();
-            responsibleUI.transform.Find("Accuracy").GetComponent<TextMesh>().text = "Accuracy: " + ((int)(accuracy)).ToString() + "%";
-            responsibleUI.transform.Find("Score").GetComponent<TextMesh>().text = "Score: " + score.ToString();
+            // Set all the text to be accurate
+            responsibleUI.transform.Find("Timer").GetComponent<TextMesh>().text = "Time: " + ((int)(Time.realtimeSinceStartup - startTime)).ToString(); // amount of time so far
+            responsibleUI.transform.Find("Accuracy").GetComponent<TextMesh>().text = "Accuracy: " + ((int)(accuracy)).ToString() + "%"; // the current accuracy 
+            responsibleUI.transform.Find("Score").GetComponent<TextMesh>().text = "Score: " + score.ToString(); // their current score
         }
 
         i++;
-        
+
     }
 
     private float AccuracyFirst()//Gets the accuracy for 1 finger up
@@ -195,13 +198,13 @@ public class Gesture : MonoBehaviour
             float Side_F1toJoint = Vector3.Distance(endPoint_1.position, accuracyJoints[i - 1].position);//get distance from an accuracy joint to the each endpoint.
             float Side_F2toJoint = Vector3.Distance(endPoint_2.position, accuracyJoints[i - 1].position);// Now we have a Side-Side-Side triangle and we can find the angle inbetween using cosine law. Inorder to get the angle. 
             float theta = Mathf.Rad2Deg * Mathf.Acos((Mathf.Pow(Side_InBetweenEndPoints, 2) - Mathf.Pow(Side_F1toJoint, 2) - Mathf.Pow(Side_F2toJoint, 2)) / (-2 * Side_F2toJoint * Side_F1toJoint));//Uses cos inverse of (c^2 - a^2 - b^2)/-2ab to find inverse
-            
+
             if (referenceValues[curFingersUp - 2][i - 1] != 0)//if current value of the angle is not 0 that means there is an angle between the two
             {
                 float change = Mathf.Abs(referenceValues[curFingersUp - 2][i - 1] - theta) / referenceValues[curFingersUp - 2][i - 1];//gets percent change between the reference value and the current value
                 DeviationFromStandard += change;//adds change to deviation
             }
-            
+
         }
         float accuracy = (DeviationFromStandard / (curFingersUp - 1));//Deviation divided by the number of fingers that are up
         accuracy = Mathf.Max(0, accuracy);//accuracy cannot be less than 0
@@ -221,17 +224,18 @@ public class Gesture : MonoBehaviour
 
     private void OnDestroy()
     {
-        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("finger - score").gameObject.GetComponent<TextMesh>().text.Substring(6));
+        // when this is destroyed, they returned to the other menu. Check if this score is higher than their high score and set a goal accordingly
+        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("finger - score").gameObject.GetComponent<TextMesh>().text.Substring(6)); // the old goal
         Debug.Log(lastScore);
         Debug.Log(score);
-        if (lastScore  < score + 100)
+        if (lastScore < score + 100) // checking if our score is a high score
         {
-            responsibleUI.transform.parent.Find("Exercise Selection").Find("finger - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString();
+            responsibleUI.transform.parent.Find("Exercise Selection").Find("finger - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString(); // change the goal text to be a 100 above high score
         }
-        
-        StreamWriter writer = new StreamWriter("Assets/Finger_Test.txt", true);//Get output file to write results to
-        writer.WriteLine(System.DateTime.Now + " - Score: "+ score);//writes score along with the current date and time so it can be shown to doctors during check ups
+
+        StreamWriter writer = new StreamWriter("Assets/Finger_Test.txt", true); //Get output file to write results to
+        writer.WriteLine(System.DateTime.Now + " - Score: " + score); //writes score along with the current date and time so it can be shown to doctors during check ups
         writer.Close(); //closes file
-        
+
     }
 }
