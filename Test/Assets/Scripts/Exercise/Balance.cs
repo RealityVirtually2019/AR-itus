@@ -15,7 +15,7 @@ public class Balance : MonoBehaviour
 
     int FrameCounter = 0, FrameLength = 240;
     float startTime;//time code started
-
+    float score;
     // Use this for initialization
     void Start()
     {
@@ -34,134 +34,93 @@ public class Balance : MonoBehaviour
         startTime = Time.realtimeSinceStartup;//get time to calculate time change
     }
 
-    // Update is called once per frame
-    int i = 0;
-    float totAccuracy = 0;
-    int score = 0;
+    float totAccuracy = 0;//total accuracy of the steadiness of the hand
 
     void Update()
     {
-        if (Random.Range(1,10)==5)
-        {
-            score += Random.Range(50,78);
-
-        }
-        if (right_hand.gameObject.activeSelf && hand != right_hand)
+        if (right_hand.gameObject.activeSelf && hand != right_hand)//if right hand becomes active set right hand variables.
         {
             FrameCounter = 0;
             hand = right_hand;
             palm = right_palm;
         }
-        else if (left_hand.gameObject.activeSelf && hand != left_hand)
+        else if (left_hand.gameObject.activeSelf && hand != left_hand)//if left hand becomes active set left hand variables
         {
             FrameCounter = 0;
             hand = left_hand;
             palm = left_hand;
         }
-        if (left_hand.gameObject.activeSelf || right_hand.gameObject.activeSelf)
+        if (left_hand.gameObject.activeSelf || right_hand.gameObject.activeSelf)//if either hand is active and moving we calculate the score
         {
-            if (FrameCounter == 0)
+            if (FrameCounter == 0)//if the counter is 0, we clear the HandPos, and we make the position list from HandPos
             {
-                HandPos.Clear();
-                Make_PosList(HandPos);
-                Total_Deviation = 0;
+                HandPos.Clear();//Clear previous
+                Make_PosList(HandPos);//make new based off current position
+                Total_Deviation = 0;//Total Deviation is set to 0 again
             }
             else
             {
-                Update_PosList();
-                Total_Deviation += Current_Deviation / HandPos.Count;
-               // Debug.Log("Current Deviation" + Current_Deviation + ", HandPos " + HandPos.Count);
-
-                Current_Deviation = 0;
+                Update_PosList();//Update Position list to new values
+                Total_Deviation += Current_Deviation / HandPos.Count; //add average of all deviations to total deviation
+                Current_Deviation = 0;//current deviation gets set to 0 to reset
             }
 
+            FrameCounter += 1;//add to frame counter each frame
+            if (FrameCounter % FrameLength == 0){//if its time to reset 
 
-
-            FrameCounter += 1;
-            if (FrameCounter % FrameLength == 0)
-            {
-                string string_output = "";
-                foreach (Vector3 pos in HandPos)
-                {
-                    string_output += "( " + pos.x + "," + pos.y + "," + pos.z + ") ";
-                }
-                Debug.Log(string_output);
-
-                Total_Deviation = Total_Deviation / FrameLength;
-                Debug.Log(Total_Deviation);
-
-                FrameCounter = 0;
-
-                totAccuracy += Total_Deviation;
-
-                if (i == 20)
-                {
-                    i = 0;
-                    float accuracy = totAccuracy / 20;
-                    totAccuracy = 0;
-
-
-                    if (accuracy > 80)
-                    {
-                        score++;
-
-                    }
-
-                    responsibleUI.transform.Find("Timer").GetComponent<TextMesh>().text = "Time: " + ((int)(Time.realtimeSinceStartup - startTime)).ToString();
-                    responsibleUI.transform.Find("Score").GetComponent<TextMesh>().text = "Score: " + score.ToString();
-                }
-
-                i++;
-
+                Total_Deviation = Total_Deviation / FrameLength;//set total deviation to be averages of all total deviations
+                score = Total_Deviation;//set score
+                //Display Time and Score
+                responsibleUI.transform.Find("Timer").GetComponent<TextMesh>().text = "Time: " + ((int)(Time.realtimeSinceStartup - startTime)).ToString();
+                responsibleUI.transform.Find("Score").GetComponent<TextMesh>().text = "Score: " + score.ToString();
+                Total_Deviation = 0;//reset total deviation
             }
 
         }
 
         
     }
-    void Make_PosList(List<Vector3> PosList)
+    void Make_PosList(List<Vector3> PosList)//Makes HandPos List from scratch
     {
-        //Debug.Log("Making New Position List");
-        Queue<Transform> parts = new Queue<Transform>();
-        parts.Enqueue(palm);
-        while (parts.Count != 0)
+        Queue<Transform> parts = new Queue<Transform>();//parts
+        parts.Enqueue(palm);//add the palm as start point
+        while (parts.Count != 0)//For each child we add parts to the HandPos List for the position
         {
-            Transform cur_P = parts.Dequeue();
-            HandPos.Add(cur_P.position);
-            foreach (Transform child in cur_P)
+            Transform cur_P = parts.Dequeue();//Pop last one
+            HandPos.Add(cur_P.position);//add posiition of current part
+            foreach (Transform child in cur_P)//for each child in current position add it to parts
             {
                 parts.Enqueue(child);
             }
         }
     }
-    void Update_PosList()
+    void Update_PosList()//Updates HandPos List and calculates deviation that is used for score
     {
-        //Debug.Log("Updating List");
-        Queue<Transform> parts = new Queue<Transform>();
-        parts.Enqueue(palm);
-        int current_Part = 0;
+        Queue<Transform> parts = new Queue<Transform>();//add a queue
+        parts.Enqueue(palm);//add start point as palm
+        int current_Part = 0;//we start at the first item in HandPos
         while (parts.Count != 0)
         {
-            Transform cur_P = parts.Dequeue();
-            Current_Deviation += Vector3.Distance(HandPos[current_Part], cur_P.position);
-            HandPos[current_Part] = cur_P.position;
+            Transform cur_P = parts.Dequeue();//pop last item in parts
+            Current_Deviation += Vector3.Distance(HandPos[current_Part], cur_P.position);//add to deviation teh distance from last position in list to its current position (steadiness)
+            HandPos[current_Part] = cur_P.position;//update position
+            current_Part++;//go to next part
             foreach (Transform child in cur_P)
             {
-                parts.Enqueue(child);
+                parts.Enqueue(child);//queue up the next parts from the children of the current part
             }
         }
     }
 
     private void OnDestroy()
     {
-        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("balance - score").gameObject.GetComponent<TextMesh>().text.Substring(6));
-        Debug.Log(lastScore);
-        Debug.Log(score);
-        if (lastScore < score + 100)
+        // when this is destroyed, they returned to the other menu. Check if this score is higher than their high score and set a goal accordingly
+        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("balance - score").gameObject.GetComponent<TextMesh>().text.Substring(6));// the old goal
+        if (lastScore < score + 100)// checking if our score is a high score
         {
-            responsibleUI.transform.parent.Find("Exercise Selection").Find("balance - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString();
+            responsibleUI.transform.parent.Find("Exercise Selection").Find("balance - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString();// change the goal text to be a 100 above high score
         }
-
+        //When user exits the game write to the text file that stores user scores along with the current date and time
         StreamWriter writer = new StreamWriter("Assets/Balance_Test.txt", true);
         writer.WriteLine(System.DateTime.Now + " - Score: " + score);
         writer.Close();
