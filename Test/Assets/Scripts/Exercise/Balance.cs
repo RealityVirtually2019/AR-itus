@@ -1,4 +1,9 @@
-﻿using System.Collections;
+﻿//Anish Aggarwal, Noor Nasri, Zhehai Zhang
+//December 11th 2019
+//ICS4U-01
+//Mr. McKenzie
+//A balance program that measures how much the hand shakes. It gives an amount of points based on how steady their hands are.
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
