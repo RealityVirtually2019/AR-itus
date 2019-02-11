@@ -5,22 +5,33 @@ using UnityEngine;
 
 public class Balance : MonoBehaviour
 {
-    public GameObject responsibleUI;
+    private GameObject responsibleUI;//UI interface
 
-    List<Vector3> HandPos = new List<Vector3>();
-    List<Vector3> startHandPos = new List<Vector3>();
+    List<Vector3> HandPos = new List<Vector3>();//Stores Hand Positions of each finger to calculate steadiness
 
-    public Transform right_hand, left_hand, right_palm, left_palm, hand, palm;
+    private Transform right_hand, left_hand, right_palm, left_palm, hand, palm;//different hands and palms
 
-    float Current_Deviation = -1, Total_Deviation;
+    float Current_Deviation = -1, Total_Deviation;//Current Deviation is calculated and added to total deviation. Total deviation then becomes the average of all deviations to get steadiness score.
 
     int FrameCounter = 0, FrameLength = 240;
-    float startTime;
+    float startTime;//time code started
 
     // Use this for initialization
     void Start()
     {
-        startTime = Time.realtimeSinceStartup;
+        responsibleUI = GameObject.Find("Canvas");//gets the UI interface
+        //Left Hand & Palm
+        left_hand = GameObject.Find("Left Hand").transform;
+        left_palm = left_hand.Find("Left Palm");
+        //Right Hand & Palm
+        right_hand = GameObject.Find("Right Hand").transform;
+        right_palm = right_hand.Find("Right Palm");
+
+        //Start off with right being active
+        hand = right_hand;
+        palm = right_palm;
+
+        startTime = Time.realtimeSinceStartup;//get time to calculate time change
     }
 
     // Update is called once per frame

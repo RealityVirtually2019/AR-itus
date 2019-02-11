@@ -104,10 +104,11 @@ public class Stretch : MonoBehaviour
 
     private void OnDestroy()
     {
-        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("stretch - score").gameObject.GetComponent<TextMesh>().text.Substring(6));
-        if (lastScore < score + 100)
+        // when this is destroyed, they returned to the other menu. Check if this score is higher than their high score and set a goal accordingly
+        int lastScore = int.Parse(responsibleUI.transform.parent.Find("Exercise Selection").Find("stretch - score").gameObject.GetComponent<TextMesh>().text.Substring(6));// the old goal
+        if (lastScore < score + 100)// checking if our score is a high score
         {
-            responsibleUI.transform.parent.Find("Exercise Selection").Find("stretch - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString();
+            responsibleUI.transform.parent.Find("Exercise Selection").Find("stretch - score").gameObject.GetComponent<TextMesh>().text = "Goal: " + (score + 100).ToString(); // change the goal text to be a 100 above high score
         }
 
         //When user exits the game write to the text file that stores user scores along with the current date and time
